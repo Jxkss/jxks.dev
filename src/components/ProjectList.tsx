@@ -17,7 +17,7 @@ const ProjectList: React.FC = () => {
       tech: ['Node.js', 'Javascript', 'HTML/CSS', 'Electron'],
       githubGrey: true,
       status: 'IN-WORK',
-      preview: 'https://preview-link.example.com'
+      preview: 'https://jbot.jxks.dev'
     },
     {
       title: 'NextvibeRP - FiveM',
