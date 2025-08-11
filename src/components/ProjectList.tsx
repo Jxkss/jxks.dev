@@ -15,7 +15,7 @@ const ProjectList: React.FC = () => {
       title: 'JBot - Discord Selfbot',
       description: 'High end paid Discord Selfbot with an Advanced GUI and 500+ Commands.',
       tech: ['Node.js', 'Javascript', 'HTML/CSS', 'Electron'],
-      githubGrey: true, // Use this instead of github for greyed out version
+      githubGrey: true,
       status: 'IN-WORK',
       preview: 'https://preview-link.example.com'
     },
@@ -23,7 +23,7 @@ const ProjectList: React.FC = () => {
       title: 'NextvibeRP - FiveM',
       description: 'French FiveM server focused on Roleplay. Extensive database.',
       tech: ['Lua', 'Javascript', 'HTML/CSS', 'SQL'],
-      githubGrey: true, // Use this instead of github for greyed out version
+      githubGrey: true,
       discord: 'https://discord.gg/nextvibe',
       status: 'IN-WORK',
     }

@@ -1,3 +1,5 @@
+// FALLBACK VIEWS IF NETLIFY FUNCTION FAILS FOR SOME REASON
+
 import { useState, useEffect } from 'react';
 
 interface ViewCountData {
@@ -16,7 +18,6 @@ export const useViewCounter = (): ViewCountData => {
   useEffect(() => {
     const registerView = async () => {
       try {
-        // Call our Netlify function
         const response = await fetch('/api/view-counter', {
           method: 'POST',
           headers: {
@@ -38,12 +39,9 @@ export const useViewCounter = (): ViewCountData => {
       } catch (error) {
         console.error('Error registering view:', error);
         
-        // Fallback to localStorage if API fails
         try {
-          // Get current timestamp
           const currentTime = Date.now();
           
-          // Check if we have view data in localStorage
           const storedData = localStorage.getItem('jxks_view_data');
           let viewCount = 755; // Start with a base count
           let lastVisit = 0;
@@ -54,7 +52,6 @@ export const useViewCounter = (): ViewCountData => {
             lastVisit = parsedData.lastVisit || 0;
           }
           
-          // Check if this is a new visit (10 hours since last visit)
           const TEN_HOURS_MS = 10 * 60 * 60 * 1000;
           const isNewVisit = !lastVisit || (currentTime - lastVisit) > TEN_HOURS_MS;
           

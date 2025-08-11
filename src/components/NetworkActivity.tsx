@@ -16,7 +16,6 @@ const NetworkActivity: React.FC = () => {
   const [packetsPerSecond, setPacketsPerSecond] = useState(0);
 
   useEffect(() => {
-    // Initialize with some connections
     const initialConnections: Connection[] = [
       { id: 1, ip: '192.168.1.1', port: 80, status: 'ESTABLISHED', protocol: 'TCP', bytes: 1024 },
       { id: 2, ip: '10.0.0.1', port: 443, status: 'ESTABLISHED', protocol: 'TCP', bytes: 2048 },

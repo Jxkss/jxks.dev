@@ -10,7 +10,6 @@ body {
   overflow: hidden;
 }
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
 
   width: 8px;
@@ -29,12 +28,10 @@ body {
   background: #CCCCCC;
 }
 
-/* Glowing effects */
 .glow {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
-/* Custom range slider styles */
 input[type="range"]::-webkit-slider-thumb {
   appearance: none;
   height: 12px;
@@ -55,7 +52,6 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* Animation keyframes */
 @keyframes matrix-rain {
   0% {
     transform: translateY(-100vh);
@@ -88,7 +84,6 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
-/* Terminal cursor animation */
 @keyframes cursor-blink {
   0%, 50% {
     opacity: 1;
@@ -102,13 +97,11 @@ input[type="range"]::-moz-range-thumb {
   animation: cursor-blink 1s infinite;
 }
 
-/* Hover effects for buttons */
 .btn-glow:hover {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
 }
 
-/* Grid animations */
 .grid-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -119,18 +112,15 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
-/* Smooth animations */
 * {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced hover effects */
 .hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
 }
 
-/* Pulse animation for status indicators */
 @keyframes status-pulse {
   0%, 100% {
     opacity: 1;

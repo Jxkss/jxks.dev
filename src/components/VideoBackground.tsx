@@ -7,12 +7,10 @@ const VideoBackground: React.FC = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    // Configure video
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
     
-    // Try to play the video
     const playVideo = async () => {
       try {
         await video.play();

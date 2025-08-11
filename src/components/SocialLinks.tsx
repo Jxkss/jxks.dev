@@ -10,7 +10,6 @@ import {
   LucideIcon
 } from 'lucide-react';
 
-// Custom Ethereum icon component
 const Ethereum: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = "" }) => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -29,7 +28,6 @@ const Ethereum: React.FC<{ size?: number; className?: string }> = ({ size = 24, 
   </svg>
 );
 
-// Custom Litecoin icon component
 const Litecoin: React.FC<{ size?: number; className?: string }> = ({ size = 24, className = "" }) => (
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
@@ -53,7 +51,6 @@ const SocialLinks: React.FC = () => {
   const [copiedState, setCopiedState] = useState<{[key: string]: boolean}>({});
   const [lastCopied, setLastCopied] = useState<string | null>(null);
 
-  // Effect to handle fading out previous tooltip when a new one appears
   useEffect(() => {
     if (lastCopied) {
       const timer = setTimeout(() => {
@@ -65,13 +62,11 @@ const SocialLinks: React.FC = () => {
   }, [lastCopied]);
 
   const handleCopy = (text: string, key: string) => {
-    // Clear any existing copied states first
     const newCopiedState = Object.keys(copiedState).reduce((acc, curr) => {
       acc[curr] = false;
       return acc;
     }, {} as {[key: string]: boolean});
     
-    // Set the new copied state
     navigator.clipboard.writeText(text).then(() => {
       setCopiedState({...newCopiedState, [key]: true});
       setLastCopied(key);
@@ -144,7 +139,6 @@ const SocialLinks: React.FC = () => {
                 )}
               </div>
               
-              {/* Tooltip that appears when copied - with fade in/out animation */}
               <div 
                 className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 border border-white text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-all duration-300 ${
                   copiedState[link.label] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'

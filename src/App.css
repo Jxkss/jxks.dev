@@ -1,5 +1,3 @@
-/* Replace or update the bloom-effect CSS with this text-only version */
-
 .text-bloom {
   --bloom-color: rgba(255, 255, 255, 0.7);
   --bloom-spread: 2px;
@@ -11,7 +9,6 @@
     0 0 calc(var(--bloom-spread) * 2) rgba(255, 255, 255, 0.3);
 }
 
-/* Enhanced glow for important text elements */
 .text-bloom .enhanced-text-glow {
   text-shadow: 
     0 0 3px rgba(255, 255, 255, 0.9),
@@ -19,7 +16,6 @@
     0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* Subtle pulse animation for glowing text */
 @keyframes subtle-pulse {
   0%, 100% {
     text-shadow: 
@@ -38,7 +34,6 @@
   animation: subtle-pulse 4s infinite ease-in-out;
 }
 
-/* Retro scrollbar styles */
 .retro-scrollbar::-webkit-scrollbar {
   width: 12px;
   background: transparent;
@@ -62,7 +57,6 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
-/* Firefox scrollbar */
 .retro-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.8) transparent;

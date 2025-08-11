@@ -9,23 +9,18 @@ const SystemMonitor: React.FC = () => {
   const [uptime, setUptime] = useState(0);
   const [lastNetworkSample, setLastNetworkSample] = useState({ time: Date.now(), bytes: 0 });
 
-  // Function to get browser memory usage if available
   const getMemoryInfo = () => {
     if ('memory' in performance) {
-      // TypeScript doesn't know about the memory property by default
       const memoryInfo = (performance as any).memory;
       if (memoryInfo) {
-        // Calculate memory usage percentage based on heap size
         const usedHeap = memoryInfo.usedJSHeapSize;
         const totalHeap = memoryInfo.jsHeapSizeLimit;
         return Math.min(Math.round((usedHeap / totalHeap) * 100), 100);
       }
     }
-    // Fallback if memory API is not available
     return Math.round(45 + Math.sin(Date.now() * 0.0008) * 10);
   };
 
-  // Function to estimate CPU usage based on frame timing
   const startCPUMonitoring = () => {
     let lastTime = performance.now();
     let frameCount = 0;
@@ -36,20 +31,16 @@ const SystemMonitor: React.FC = () => {
       const frameTime = now - lastTime;
       lastTime = now;
       
-      // Skip outliers (e.g., when tab was inactive)
       if (frameTime < 100) {
         frameCount++;
         totalFrameTime += frameTime;
         
-        // Calculate average frame time over last 30 frames
         if (frameCount > 30) {
           const avgFrameTime = totalFrameTime / frameCount;
-          // Estimate CPU usage: higher frame time = higher CPU usage
-          // 16.7ms is ideal for 60fps, so we use that as a baseline
+
           const estimatedUsage = Math.min(Math.round((avgFrameTime / 33.3) * 50), 100);
           setCpuUsage(estimatedUsage);
           
-          // Reset for next batch
           frameCount = 0;
           totalFrameTime = 0;
         }
@@ -61,60 +52,48 @@ const SystemMonitor: React.FC = () => {
     requestAnimationFrame(measureFrame);
   };
 
-  // Function to estimate network activity
   const monitorNetwork = () => {
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
       if (connection && connection.downlink) {
-        // Convert Mbps to MBps (divide by 8)
         return Math.round(connection.downlink / 8 * 10) / 10;
       }
     }
     
-    // Fallback: estimate based on resource timing
     const resources = performance.getEntriesByType('resource');
     const now = Date.now();
     let totalBytes = 0;
     
-    // Sum up bytes transferred in the last sample
     resources.forEach(resource => {
       if ((resource as any).transferSize && resource.startTime > lastNetworkSample.time) {
         totalBytes += (resource as any).transferSize;
       }
     });
     
-    // Calculate MB/s
     const seconds = (now - lastNetworkSample.time) / 1000;
     const mbps = seconds > 0 ? (totalBytes / 1024 / 1024) / seconds : 0;
     
-    // Update last sample
     setLastNetworkSample({ time: now, bytes: totalBytes });
     
     return Math.min(Math.round(mbps * 10) / 10, 100);
   };
 
-  // Initialize and update metrics
   useEffect(() => {
-    // Start CPU monitoring
     startCPUMonitoring();
     
-    // Set initial uptime to 0
     const startTime = Date.now();
     
     const interval = setInterval(() => {
-      // Update memory usage
+
       setMemoryUsage(getMemoryInfo());
       
-      // Update network speed
       setNetworkSpeed(monitorNetwork());
       
-      // Update disk usage (simulated - can't access real disk info in browser)
       setDiskUsage(prev => {
         const target = 67 + Math.random() * 2;
         return prev + (target - prev) * 0.02;
       });
       
-      // Update uptime (real time since component mounted)
       setUptime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
 

@@ -173,13 +173,12 @@ const TerminalOutput: React.FC = () => {
         ref={containerRef} 
         className="text-xs space-y-1 overflow-hidden relative z-10"
         style={{ 
-          height: '9rem',  // Reduced from 12rem to 10rem
+          height: '9rem',
           maxHeight: '9rem',
-          overflowY: 'hidden' // Ensure no scrolling within terminal
+          overflowY: 'hidden'
         }}
       >
         <div className="terminal-text-container">
-          {/* Previously completed lines */}
           {displayedLines.map((line, index) => {
             const opacity = Math.min(1, (index / displayedLines.length) * 2 + 0.3);
             

@@ -22,7 +22,6 @@ function App() {
   const contentWrapperRef = useRef<HTMLDivElement>(null);
   const { count: viewCount, loading: viewCountLoading } = useViewCounter();
   
-  // Check screen size on mount and when window resizes
   useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
@@ -31,8 +30,7 @@ function App() {
       setWindowSize({ width, height });
       setIsMobile(width < 768);
       
-      // Set base scale based on screen size - higher minimum values
-      let initialScale = 1.05; // Minimum scale for small screens
+      let initialScale = 1.05;
       if (width > 1600) initialScale = 1.15;
       else if (width > 1200) initialScale = 1.12;
       else if (width > 768) initialScale = 1.08;
@@ -40,17 +38,13 @@ function App() {
       setScale(initialScale);
     };
     
-    // Initial check
     checkScreenSize();
     
-    // Add resize listener
     window.addEventListener('resize', checkScreenSize);
     
-    // Cleanup
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
   
-  // Handle video playback when interaction is complete
   useEffect(() => {
     if (interactionComplete && videoRef.current) {
       videoRef.current.play().catch(err => {
@@ -59,7 +53,6 @@ function App() {
     }
   }, [interactionComplete]);
   
-  // Check if content overflows and adjust scale if needed
   useEffect(() => {
     if (!contentRef.current || !contentWrapperRef.current || windowSize.width === 0) return;
     
@@ -69,41 +62,30 @@ function App() {
       const wrapper = contentWrapperRef.current;
       const content = contentRef.current;
       
-      // Reset transform to measure natural size
       content.style.transform = '';
       
-      // Get the natural content dimensions
       const naturalContentRect = content.getBoundingClientRect();
       const wrapperRect = wrapper.getBoundingClientRect();
       
-      // Calculate how much we need to scale to fit height
-      // Leave more margin (0.9) to avoid cutting off content
       const heightRatio = (wrapperRect.height * 0.9) / naturalContentRect.height;
       
-      // Determine appropriate scale
-      // Don't go below minimum scale based on screen width
       const minScale = windowSize.width < 768 ? 0.95 : 1.0;
       let newScale = Math.min(scale, heightRatio);
       
-      // Ensure we don't scale down too much
       newScale = Math.max(newScale, minScale);
       
-      // Apply the new scale
       content.style.transform = `scale(${newScale})`;
       
-      // Check if content still overflows after scaling
       const scaledRect = content.getBoundingClientRect();
       const stillOverflowing = scaledRect.height > wrapperRect.height;
       
       setContentOverflow(stillOverflowing);
       setScale(newScale);
       
-      // Adjust padding based on available space and ensure content is visible
-      wrapper.style.paddingTop = '2rem'; // Add more top padding to prevent cutoff
+      wrapper.style.paddingTop = '2rem';
       wrapper.style.paddingBottom = stillOverflowing ? '1rem' : '2rem';
     };
     
-    // Run the check after a short delay to ensure DOM has updated
     const timeoutId = setTimeout(checkContentFit, 200);
     
     return () => clearTimeout(timeoutId);
@@ -127,24 +109,21 @@ function App() {
                                  
   `;
 
-  // Calculate dynamic container width based on screen size
   const getContainerMaxWidth = () => {
     if (windowSize.width > 1600) return 'max-w-7xl';
     if (windowSize.width > 1200) return 'max-w-6xl';
     if (windowSize.width > 992) return 'max-w-5xl';
     if (windowSize.width > 768) return 'max-w-4xl';
-    return 'max-w-full px-2'; // Mobile gets full width with small padding
+    return 'max-w-full px-2';
   };
 
-  // Calculate dynamic gap size based on screen size and overflow status
   const getGapSize = () => {
-    if (contentOverflow) return 'gap-2'; // Reduce gap if content overflows
+    if (contentOverflow) return 'gap-2';
     if (windowSize.width > 1200) return 'gap-4';
     if (windowSize.width > 768) return 'gap-3';
-    return 'gap-2'; // Smaller gap on mobile
+    return 'gap-2';
   };
 
-  // Calculate spacing between components based on overflow
   const getSpacingClass = () => {
     if (contentOverflow) return 'space-y-2';
     return 'space-y-3';
@@ -152,7 +131,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden font-mono text-bloom">
-      {/* Video Background */}
       <video
         ref={videoRef}
         className="fixed top-0 left-0 w-full h-full object-cover z-0"
@@ -166,7 +144,6 @@ function App() {
         Your browser does not support video playback.
       </video>
       
-      {/* Main Content */}
       <div 
         ref={contentWrapperRef}
         className={`relative z-10 py-8 px-2 min-h-screen flex items-start justify-center ${!interactionComplete ? 'blur-sm' : ''} retro-scrollbar`}
@@ -176,7 +153,6 @@ function App() {
           paddingTop: '2rem',
         }}
       >
-        {/* Responsive container with dynamic width and scale */}
         <div 
           ref={contentRef}
           className={`${getContainerMaxWidth()} mx-auto mt-4`}
@@ -186,12 +162,10 @@ function App() {
             transition: 'transform 0.3s ease-out'
           }}
         >
-          {/* ASCII Header with Particles */}
           <div className="w-full py-2 mb-2">
             <div className="text-center relative">
               {!isMobile ? (
                 <div className="relative">
-                  {/* Particle animation around ASCII art */}
                   {interactionComplete && <TextParticles containerClassName="z-0" />}
                   
                   <pre className="text-white text-xs md:text-sm leading-tight whitespace-pre font-mono drop-shadow-lg overflow-x-auto enhanced-text-glow relative z-10">
@@ -200,7 +174,6 @@ function App() {
                 </div>
               ) : (
                 <div className="relative">
-                  {/* Particle animation around mobile header */}
                   {interactionComplete && <TextParticles containerClassName="z-0" />}
                   
                   <h1 className="text-3xl font-bold enhanced-text-glow relative z-10">JXKS.DEV</h1>
@@ -210,7 +183,6 @@ function App() {
                 [ FULL-STACK DEVELOPER & LAZINESS SPECIALIST ]
               </div>
               
-              {/* Enhanced view counter */}
               <div className="mt-2 flex items-center justify-center gap-2">
                 <div className="bg-black bg-opacity-25 border border-white px-3 py-1 rounded-sm flex items-center">
                   <span className="text-white mr-2 animate-pulse">👁</span>
@@ -231,22 +203,16 @@ function App() {
             </div>
           </div>
 
-          {/* Responsive Grid Layout with dynamic gap */}
           <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-12'} ${getGapSize()}`}>
-            {/* Left Column */}
             <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()}`}>
               <MusicPlayer autoplayEnabled={interactionComplete} />
               <RequestGraph />
               <SystemMonitor />
             </div>
-
-            {/* Center Column */}
             <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()}`}>
               <ProjectList />
               <TerminalOutput />
             </div>
-
-            {/* Right Column */}
             <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()} mb-2`}>
               <SkillsMatrix />
               <SocialLinks />
@@ -256,7 +222,6 @@ function App() {
         </div>
       </div>
 
-      {/* Interaction Overlay */}
       {!interactionComplete && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center cursor-pointer"
@@ -272,7 +237,6 @@ function App() {
         </div>
       )}
 
-      {/* Occasional glitch effect */}
       <div className="glitch-overlay"></div>
     </div>
   );

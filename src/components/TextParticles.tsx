@@ -17,32 +17,27 @@ interface TextParticlesProps {
 const TextParticles: React.FC<TextParticlesProps> = ({ containerClassName = '' }) => {
   const [particles, setParticles] = useState<Particle[]>([]);
   
-  // Characters to use for particles
   const particleChars = ['0', '1', '.', '*', '+', ':', '·', '°', '×'];
   
   useEffect(() => {
-    // Create initial particles
     const initialParticles: Particle[] = Array.from({ length: 30 }, (_, i) => ({
       id: i,
-      x: Math.random() * 100, // percentage position
+      x: Math.random() * 100,
       y: Math.random() * 100,
       char: particleChars[Math.floor(Math.random() * particleChars.length)],
-      opacity: Math.random() * 0.7 + 0.1, // between 0.1 and 0.8
-      speed: Math.random() * 0.5 + 0.1, // between 0.1 and 0.6
-      size: Math.random() * 0.5 + 0.5, // between 0.5 and 1
+      opacity: Math.random() * 0.7 + 0.1,
+      speed: Math.random() * 0.5 + 0.1,
+      size: Math.random() * 0.5 + 0.5,
     }));
     
     setParticles(initialParticles);
     
-    // Animation loop
     const interval = setInterval(() => {
       setParticles(prevParticles => 
         prevParticles.map(particle => {
-          // Move particle upward and slightly to the side
           let newY = particle.y - particle.speed;
           let newX = particle.x + (Math.random() - 0.5) * 0.5;
           
-          // If particle goes off screen, reset it at the bottom
           if (newY < -5) {
             newY = 105;
             newX = Math.random() * 100;
@@ -56,7 +51,6 @@ const TextParticles: React.FC<TextParticlesProps> = ({ containerClassName = '' }
             };
           }
           
-          // Keep particles within horizontal bounds
           newX = Math.max(0, Math.min(100, newX));
           
           return {
