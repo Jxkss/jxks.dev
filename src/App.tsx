@@ -162,8 +162,6 @@ function App() {
         playsInline
         poster="/placeholder-dark.jpg"
       >
-        <source src="/videos/BACKGROUND.mp4" type="video/mp4" />
-        <source src="/assets/BACKGROUND.mp4" type="video/mp4" />
         <source src="/BACKGROUND.mp4" type="video/mp4" />
         Your browser does not support video playback.
       </video>
@@ -210,9 +208,6 @@ function App() {
               )}
               <div className="mt-2 text-white text-sm font-bold tracking-wider pulsing-glow">
                 [ FULL-STACK DEVELOPER & LAZINESS SPECIALIST ]
-              </div>
-              <div className="text-white text-xs mt-1 animate-pulse">
-                👁 {viewCountLoading ? '...' : viewCount} VIEWS || ⚐ FRANCE/INDONESIA
               </div>
               
               {/* Enhanced view counter */}

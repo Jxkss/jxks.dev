@@ -30,7 +30,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ autoplayEnabled = false }) =>
   ];
 
   // In Vite, assets in the public folder are served at the root path
-  const getAudioPath = () => `/assets/${tracks[currentTrack].name}`;
+  const getAudioPath = () => `/${tracks[currentTrack].name}`;
 
   // Initialize audio context and analyzer when audio is ready
   const initializeAudioContext = () => {
