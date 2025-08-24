@@ -24,7 +24,7 @@ const ProjectList: React.FC = () => {
       description: 'French FiveM server focused on Roleplay. Extensive database.',
       tech: ['Lua', 'Javascript', 'HTML/CSS', 'SQL'],
       githubGrey: true,
-      discord: 'https://discord.gg/QCcKAZQ96A',
+      discord: 'https://discord.gg/ZSgeuQUHtT',
       status: 'IN-WORK',
     }
   ];

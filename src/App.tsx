@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import MusicPlayer from './components/MusicPlayer';
-import RequestGraph from './components/RequestGraph';
 import SocialLinks from './components/SocialLinks';
 import ProjectList from './components/ProjectList';
 import SkillsMatrix from './components/SkillsMatrix';
-import SystemMonitor from './components/SystemMonitor';
-import TerminalOutput from './components/TerminalOutput';
-import NetworkActivity from './components/NetworkActivity';
 import TextParticles from './components/TextParticles';
 import { useViewCounter } from './hooks/useViewCounter';
+import { Volume2, VolumeX } from 'lucide-react';
 import './App.css';
 
 function App() {
@@ -17,6 +13,7 @@ function App() {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [scale, setScale] = useState(1.1);
   const [contentOverflow, setContentOverflow] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const contentWrapperRef = useRef<HTMLDivElement>(null);
@@ -47,7 +44,12 @@ function App() {
   
   useEffect(() => {
     if (interactionComplete && videoRef.current) {
-      videoRef.current.play().catch(err => {
+      // Play the video and unmute it after user interaction
+      videoRef.current.play().then(() => {
+        // Unmute the video after successful play
+        videoRef.current!.muted = false;
+        setIsMuted(false);
+      }).catch(err => {
         console.error("Video play failed:", err);
       });
     }
@@ -95,6 +97,13 @@ function App() {
     setInteractionComplete(true);
   };
 
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   const asciiArt = `
    d8,             d8b                     d8b                 
   '8P              ?88                     88P                 
@@ -117,36 +126,37 @@ function App() {
     return 'max-w-full px-2';
   };
 
-  const getGapSize = () => {
-    if (contentOverflow) return 'gap-2';
-    if (windowSize.width > 1200) return 'gap-4';
-    if (windowSize.width > 768) return 'gap-3';
-    return 'gap-2';
-  };
-
-  const getSpacingClass = () => {
-    if (contentOverflow) return 'space-y-2';
-    return 'space-y-3';
-  };
-
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden font-mono text-bloom">
       <video
         ref={videoRef}
         className="fixed top-0 left-0 w-full h-full object-cover z-0"
         style={{ opacity: 0.5 }}
-        muted
+        muted={isMuted}
         loop
         playsInline
         poster="/placeholder-dark.jpg"
       >
-        <source src="/BACKGROUND.mp4" type="video/mp4" />
+        <source src="BACKGROUND.mp4" type="video/mp4" />
         Your browser does not support video playback.
       </video>
       
+      {/* Sound control button */}
+      <button 
+        onClick={toggleMute}
+        className="fixed bottom-4 right-4 z-50 bg-black bg-opacity-50 border border-white p-2 rounded-full hover:bg-opacity-70 transition-all duration-300"
+        aria-label={isMuted ? "Unmute background" : "Mute background"}
+      >
+        {isMuted ? (
+          <VolumeX size={20} className="text-white" />
+        ) : (
+          <Volume2 size={20} className="text-white" />
+        )}
+      </button>
+      
       <div 
         ref={contentWrapperRef}
-        className={`relative z-10 py-8 px-2 min-h-screen flex items-start justify-center ${!interactionComplete ? 'blur-sm' : ''} retro-scrollbar`}
+        className={`relative z-10 py-8 px-2 min-h-screen flex items-center justify-center ${!interactionComplete ? 'blur-sm' : ''} retro-scrollbar`}
         style={{ 
           overflowY: contentOverflow ? 'auto' : 'hidden',
           height: '100vh',
@@ -155,14 +165,14 @@ function App() {
       >
         <div 
           ref={contentRef}
-          className={`${getContainerMaxWidth()} mx-auto mt-4`}
+          className={`${getContainerMaxWidth()} mx-auto`}
           style={{ 
             transform: `scale(${scale})`,
-            transformOrigin: 'center 0%',
+            transformOrigin: 'center center',
             transition: 'transform 0.3s ease-out'
           }}
         >
-          <div className="w-full py-2 mb-2">
+          <div className="w-full py-2 mb-6">
             <div className="text-center relative">
               {!isMobile ? (
                 <div className="relative">
@@ -203,20 +213,29 @@ function App() {
             </div>
           </div>
 
-          <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-12'} ${getGapSize()}`}>
-            <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()}`}>
-              <MusicPlayer autoplayEnabled={interactionComplete} />
-              <RequestGraph />
-              <SystemMonitor />
-            </div>
-            <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()}`}>
-              <ProjectList />
-              <TerminalOutput />
-            </div>
-            <div className={`${isMobile ? '' : 'col-span-4'} ${getSpacingClass()} mb-2`}>
+          {/* Side-by-side layout */}
+          <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-3 gap-4'}`}>
+            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full">
+              <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+                <span className="animate-pulse">~$</span> SKILLS
+              </h3>
               <SkillsMatrix />
-              <SocialLinks />
-              <NetworkActivity />
+            </div>
+            
+            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full">
+              <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+                <span className="animate-pulse">~$</span> PROJECTS
+              </h3>
+              <ProjectList />
+            </div>
+            
+            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full flex flex-col">
+              <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+                <span className="animate-pulse">~$</span> CONNECT
+              </h3>
+              <div className="flex-grow">
+                <SocialLinks vertical={true} />
+              </div>
             </div>
           </div>
         </div>

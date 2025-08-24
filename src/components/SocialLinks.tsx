@@ -47,7 +47,11 @@ const Litecoin: React.FC<{ size?: number; className?: string }> = ({ size = 24, 
   </svg>
 );
 
-const SocialLinks: React.FC = () => {
+interface SocialLinksProps {
+  vertical?: boolean;
+}
+
+const SocialLinks: React.FC<SocialLinksProps> = ({ vertical = false }) => {
   const [copiedState, setCopiedState] = useState<{[key: string]: boolean}>({});
   const [lastCopied, setLastCopied] = useState<string | null>(null);
 
@@ -73,30 +77,38 @@ const SocialLinks: React.FC = () => {
     });
   };
 
-  const links = [
+  const socialLinks = [
     { 
       icon: MessageSquare, 
       label: 'Discord', 
+      description: 'Chat with me directly',
       url: 'https://discord.com/users/1154446508238844026'
     },
     { 
       icon: Github, 
       label: 'GitHub', 
+      description: 'Check out my repositories',
       url: 'https://github.com/Jxkss'
     },
     { 
       icon: Gamepad2, 
       label: 'Steam', 
+      description: 'Game with me',
       url: 'https://steamcommunity.com/id/jxksonsteam/'
     },
     { 
       icon: DollarSign, 
       label: 'PayPal', 
+      description: 'Support my work',
       url: 'https://www.paypal.com/paypalme/JaksPrime'
     },
+  ];
+
+  const cryptoLinks = [
     { 
       icon: Bitcoin, 
       label: 'BTC', 
+      description: 'Bitcoin donation',
       url: '#',
       isCrypto: true,
       cryptoAddress: 'bc1qnj0hddqp7mfqt6q5wkgjt6mf8j2qyp320taamq'
@@ -104,6 +116,7 @@ const SocialLinks: React.FC = () => {
     { 
       icon: Litecoin, 
       label: 'LTC', 
+      description: 'Litecoin donation',
       url: '#',
       isCrypto: true,
       cryptoAddress: 'LdvDNuGg6w7qiawvFSc99FGs94X1dAzCk2'
@@ -111,54 +124,138 @@ const SocialLinks: React.FC = () => {
     { 
       icon: Ethereum, 
       label: 'ETH', 
+      description: 'Ethereum donation',
       url: '#',
       isCrypto: true,
       cryptoAddress: '0xD543B9324258235A13BA8031C9945200E5Ed8A0e'
     },
   ];
 
-  return (
-    <div className="bg-black border bg-opacity-40 p-4 font-mono hover:border-gray-300 transition-all duration-300 hover:shadow-lg hover:shadow-white/20">
-      <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
-        <span className="animate-pulse">~$</span> CONNECT.EXE
-      </h3>
-      <div className="grid grid-cols-7 gap-2">
-        {links.map((link, index) => (
-          link.isCrypto ? (
-            <button
-              key={index}
-              onClick={() => handleCopy(link.cryptoAddress!, link.label)}
-              className="flex flex-col items-center p-3 bg-gray-900 bg-opacity-25 rounded border border-gray-800 border-opacity-25 transition-all duration-300 hover:border-white hover:scale-110 hover:shadow-md hover:shadow-white/30 group text-white relative"
-            >
-              <div className="relative">
-                <link.icon size={20} />
-                {copiedState[link.label] ? (
-                  <Check size={12} className="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5" />
-                ) : (
-                  <Copy size={12} className="absolute -top-1 -right-1 bg-gray-700 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                )}
-              </div>
-              
-              <div 
-                className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 border border-white text-white text-xs py-1 px-2 rounded whitespace-nowrap transition-all duration-300 ${
-                  copiedState[link.label] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'
-                }`}
-              >
-                Address copied!
-              </div>
-            </button>
-          ) : (
+  if (vertical) {
+    return (
+      <div className="bg-black border border-white bg-opacity-40 p-4 font-mono transition-all duration-300 hover:shadow-lg hover:shadow-white/20">
+        <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+          <span className="animate-pulse">~$</span> CONNECT.EXE
+        </h3>
+        <div className="space-y-3">
+          {socialLinks.map((link, index) => (
             <a
               key={index}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center p-3 bg-gray-900 bg-opacity-25 rounded border border-gray-800 border-opacity-25 transition-all duration-300 hover:border-white hover:scale-110 hover:shadow-md hover:shadow-white/30 group text-white"
+              className="flex items-center group"
             >
-              <link.icon size={20} />
+              <div className="w-8 flex justify-center mr-2">
+                <link.icon size={20} className="text-white" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-white">{link.label}</div>
+                <div className="text-gray-400 text-xs">{link.description}</div>
+              </div>
+              <div className="ml-2 text-gray-400 group-hover:text-white transition-colors">
+                →
+              </div>
             </a>
-          )
-        ))}
+          ))}
+          
+          <div className="border-t border-gray-600 my-4 pt-4">
+            <h4 className="text-white text-sm font-bold mb-3 flex items-center gap-2">
+              <span className="animate-pulse">~$</span> CRYPTO.DONATE
+            </h4>
+          </div>
+          
+          {cryptoLinks.map((link, index) => (
+            <div key={index} className="flex items-center">
+              <div className="w-8 flex justify-center mr-2">
+                <link.icon size={20} className="text-white" />
+              </div>
+              <div className="flex-grow">
+                <div className="text-white">{link.label}</div>
+                <div className="text-gray-400 text-xs">{link.description}</div>
+              </div>
+              <button
+                onClick={() => handleCopy(link.cryptoAddress!, link.label)}
+                className="ml-2 relative group"
+              >
+                {copiedState[link.label] ? (
+                  <Check size={18} className="text-green-500" />
+                ) : (
+                  <Copy size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+                )}
+                
+                <div 
+                  className={`absolute right-0 top-full mt-1 bg-black bg-opacity-50 border border-white text-white text-xs py-1 px-2 whitespace-nowrap transition-all duration-300 ${
+                    copiedState[link.label] ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                  }`}
+                >
+                  Address copied!
+                </div>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-black border border-white bg-opacity-40 p-4 font-mono transition-all duration-300 hover:shadow-lg hover:shadow-white/20">
+      <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
+        <span className="animate-pulse">~$</span> CONNECT.EXE
+      </h3>
+      
+      <div className="space-y-4">
+        <div className="border border-white p-4 transition-all duration-300 hover:shadow-md hover:shadow-white/20 group">
+          <h4 className="text-white font-bold text-sm mb-3">SOCIAL LINKS</h4>
+          
+          <div className="grid grid-cols-4 gap-2">
+            {socialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center p-2 bg-gray-900 bg-opacity-25 text-white hover:bg-opacity-0 transition-colors"
+              >
+                <link.icon size={16} />
+                <span className="text-xs mt-1">{link.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+        
+        <div className="border border-white p-4 transition-all duration-300 hover:shadow-md hover:shadow-white/20 group">
+          <h4 className="text-white font-bold text-sm mb-3">CRYPTO DONATIONS</h4>
+          
+          <div className="grid grid-cols-3 gap-2">
+            {cryptoLinks.map((link, index) => (
+              <button
+                key={index}
+                onClick={() => handleCopy(link.cryptoAddress!, link.label)}
+                className="flex flex-col items-center p-2 bg-gray-900 bg-opacity-25 text-white hover:bg-opacity-0 transition-colors relative"
+              >
+                <div className="relative">
+                  <link.icon size={16} />
+                  {copiedState[link.label] ? (
+                    <Check size={12} className="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5" />
+                  ) : (
+                    <Copy size={12} className="absolute -top-1 -right-1 bg-gray-700 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
+                </div>
+                <span className="text-xs mt-1">{link.label}</span>
+                
+                <div 
+                  className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 border border-white text-white text-xs py-1 px-2 whitespace-nowrap transition-all duration-300 ${
+                    copiedState[link.label] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1 pointer-events-none'
+                  }`}
+                >
+                  Address copied!
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
