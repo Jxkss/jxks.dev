@@ -84,14 +84,27 @@ function App() {
       setContentOverflow(stillOverflowing);
       setScale(newScale);
       
-      wrapper.style.paddingTop = '2rem';
-      wrapper.style.paddingBottom = stillOverflowing ? '1rem' : '2rem';
+      // Adjust padding based on device type
+      if (isMobile) {
+        wrapper.style.paddingTop = '1rem';
+        wrapper.style.paddingBottom = '1rem';
+      } else {
+        wrapper.style.paddingTop = '2rem';
+        wrapper.style.paddingBottom = stillOverflowing ? '1rem' : '2rem';
+      }
+      
+      // Ensure scroll position is at the top for mobile devices
+      if (isMobile && interactionComplete) {
+        setTimeout(() => {
+          wrapper.scrollTop = 0;
+        }, 100);
+      }
     };
     
     const timeoutId = setTimeout(checkContentFit, 200);
     
     return () => clearTimeout(timeoutId);
-  }, [windowSize, interactionComplete]);
+  }, [windowSize, interactionComplete, isMobile, scale]);
   
   const handleInteraction = () => {
     setInteractionComplete(true);
@@ -156,11 +169,15 @@ function App() {
       
       <div 
         ref={contentWrapperRef}
-        className={`relative z-10 py-8 px-2 min-h-screen flex items-center justify-center ${!interactionComplete ? 'blur-sm' : ''} retro-scrollbar`}
+        className={`relative z-10 py-8 px-2 min-h-screen ${!interactionComplete ? 'blur-sm' : ''} retro-scrollbar`}
         style={{ 
           overflowY: contentOverflow ? 'auto' : 'hidden',
           height: '100vh',
-          paddingTop: '2rem',
+          paddingTop: isMobile ? '1rem' : '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: isMobile ? 'flex-start' : 'center'
         }}
       >
         <div 
@@ -168,7 +185,7 @@ function App() {
           className={`${getContainerMaxWidth()} mx-auto`}
           style={{ 
             transform: `scale(${scale})`,
-            transformOrigin: 'center center',
+            transformOrigin: isMobile ? 'top center' : 'center center',
             transition: 'transform 0.3s ease-out'
           }}
         >
