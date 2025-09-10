@@ -3,8 +3,8 @@ import SocialLinks from './components/SocialLinks';
 import ProjectList from './components/ProjectList';
 import SkillsMatrix from './components/SkillsMatrix';
 import TextParticles from './components/TextParticles';
+import MusicPlayer from './components/MusicPlayer';
 import { useViewCounter } from './hooks/useViewCounter';
-import { Volume2, VolumeX } from 'lucide-react';
 import './App.css';
 
 function App() {
@@ -14,9 +14,11 @@ function App() {
   const [scale, setScale] = useState(1.1);
   const [contentOverflow, setContentOverflow] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [hasBeat, setHasBeat] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const contentWrapperRef = useRef<HTMLDivElement>(null);
+  const visualizerCanvasRef = useRef<HTMLCanvasElement>(null);
   const { count: viewCount, loading: viewCountLoading } = useViewCounter();
   
   useEffect(() => {
@@ -110,11 +112,9 @@ function App() {
     setInteractionComplete(true);
   };
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(!isMuted);
-    }
+
+  const handleBeatDetected = (beat: boolean) => {
+    setHasBeat(beat);
   };
 
   const asciiArt = `
@@ -140,11 +140,32 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden font-mono text-bloom">
+    <div className={`min-h-screen bg-black text-white relative font-mono text-bloom transition-all duration-200 ${hasBeat ? 'drop-shadow-[0_0_50px_rgba(255,255,255,0.3)]' : ''}`}>
+      {/* Background Visualizer Canvas - Behind everything except video */}
+      <canvas 
+        ref={visualizerCanvasRef} 
+        className="fixed top-0 left-0 pointer-events-none"
+        style={{ 
+          background: 'transparent',
+          width: '100vw',
+          height: '100vh',
+          zIndex: 1,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          margin: 0,
+          padding: 0,
+          border: 'none',
+          outline: 'none'
+        }}
+      />
+      
       <video
         ref={videoRef}
-        className="fixed top-0 left-0 w-full h-full object-cover z-0"
-        style={{ opacity: 0.5 }}
+        className="fixed top-0 left-0 w-full h-full object-cover"
+        style={{ opacity: 0.5, zIndex: 2 }}
         muted={isMuted}
         loop
         playsInline
@@ -154,18 +175,6 @@ function App() {
         Your browser does not support video playback.
       </video>
       
-      {/* Sound control button */}
-      <button 
-        onClick={toggleMute}
-        className="fixed bottom-4 right-4 z-50 bg-black bg-opacity-50 border border-white p-2 rounded-full hover:bg-opacity-70 transition-all duration-300"
-        aria-label={isMuted ? "Unmute background" : "Mute background"}
-      >
-        {isMuted ? (
-          <VolumeX size={20} className="text-white" />
-        ) : (
-          <Volume2 size={20} className="text-white" />
-        )}
-      </button>
       
       <div 
         ref={contentWrapperRef}
@@ -211,7 +220,7 @@ function App() {
               </div>
               
               <div className="mt-2 flex items-center justify-center gap-2">
-                <div className="bg-black bg-opacity-25 border border-white px-3 py-1 rounded-sm flex items-center">
+                <div className="bg-black bg-opacity-20 border border-white/20 px-3 py-1 rounded-lg flex items-center hover:border-white/40 transition-all duration-300">
                   <span className="text-white mr-2 animate-pulse">👁</span>
                   <span className="text-white font-bold">
                     {viewCountLoading ? (
@@ -222,8 +231,8 @@ function App() {
                   </span>
                   <span className="ml-1 text-gray-400 text-xs">VIEWS</span>
                 </div>
-                <div className="border-l border-white h-4"></div>
-                <div className="bg-black bg-opacity-25 border border-white px-3 py-1 rounded-sm">
+                <div className="border-l border-white/20 h-4"></div>
+                <div className="bg-black bg-opacity-20 border border-white/20 px-3 py-1 rounded-lg hover:border-white/40 transition-all duration-300">
                   <span className="text-white">⚐ FRANCE/INDONESIA</span>
                 </div>
               </div>
@@ -231,22 +240,22 @@ function App() {
           </div>
 
           {/* Side-by-side layout */}
-          <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-3 gap-4'}`}>
-            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full">
+          <div className={`grid ${isMobile ? 'grid-cols-1 gap-6' : 'grid-cols-3 gap-6'}`}>
+            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full backdrop-blur-sm hover:border-white/40">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> SKILLS
               </h3>
               <SkillsMatrix />
             </div>
             
-            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full">
+            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full backdrop-blur-sm hover:border-white/40">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> PROJECTS
               </h3>
               <ProjectList />
             </div>
             
-            <div className="bg-transparent border border-transparent p-4 transition-all duration-300 hover:shadow-white/20 h-full flex flex-col">
+            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full flex flex-col backdrop-blur-sm hover:border-white/40">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> CONNECT
               </h3>
@@ -255,6 +264,15 @@ function App() {
               </div>
             </div>
           </div>
+
+          {/* Music Player is now positioned as fixed elements */}
+          <MusicPlayer 
+            autoplayEnabled={interactionComplete}
+            externalMuted={isMuted}
+            onMuteChange={setIsMuted}
+            onBeatDetected={handleBeatDetected}
+            canvasRef={visualizerCanvasRef}
+          />
         </div>
       </div>
 
@@ -274,6 +292,13 @@ function App() {
       )}
 
       <div className="glitch-overlay"></div>
+      
+      {/* Beat Glow Overlay */}
+      {hasBeat && (
+        <div className="fixed inset-0 pointer-events-none z-40 animate-pulse">
+          <div className="w-full h-full bg-gradient-radial from-white/10 via-transparent to-transparent"></div>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,3 +61,7 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.8) transparent;
 }
+
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
