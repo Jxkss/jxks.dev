@@ -1,4 +1,3 @@
-// FALLBACK VIEWS IF NETLIFY FUNCTION FAILS FOR SOME REASON
 
 import { useState, useEffect } from 'react';
 
@@ -43,7 +42,7 @@ export const useViewCounter = (): ViewCountData => {
           const currentTime = Date.now();
           
           const storedData = localStorage.getItem('jxks_view_data');
-          let viewCount = 755; // Start with a base count
+          let viewCount = 755;
           let lastVisit = 0;
           
           if (storedData) {
@@ -56,17 +55,13 @@ export const useViewCounter = (): ViewCountData => {
           const isNewVisit = !lastVisit || (currentTime - lastVisit) > TEN_HOURS_MS;
           
           if (isNewVisit) {
-            // Increment count for new visits
             viewCount += 1;
-            
-            // Update localStorage
             localStorage.setItem('jxks_view_data', JSON.stringify({
               count: viewCount,
               lastVisit: currentTime
             }));
           }
           
-          // Update state with the view count
           setViewData({
             count: viewCount,
             loading: false,
@@ -74,7 +69,7 @@ export const useViewCounter = (): ViewCountData => {
           });
         } catch (localError) {
           setViewData({
-            count: 755, // Fallback count
+            count: 755,
             loading: false,
             error: true
           });
@@ -82,7 +77,6 @@ export const useViewCounter = (): ViewCountData => {
       }
     };
 
-    // Register the view
     registerView();
   }, []);
 

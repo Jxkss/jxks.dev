@@ -8,18 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>~$ Jxks.dev</title>
     
-    <!-- Primary Meta Tags -->
     <meta name="title" content="jxks.dev - Full-Stack Developer & Laziness Specialist">
     <meta name="description" content="Jxks.dev">
     
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://jxks.dev/">
     <meta property="og:title" content="jxks.dev - Full-Stack Developer & Laziness Specialist">
     <meta property="og:description" content="Jxks.dev">
     <meta property="og:image" content="https://jxks.dev/og-image.png">
     
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://jxks.dev/">
     <meta property="twitter:title" content="jxks.dev - Full-Stack Developer & Laziness Specialist">
@@ -27,18 +24,16 @@
     <meta property="twitter:image" content="https://jxks.dev/og-image.png">
     
     <script>
-      // Smoother title animation
       document.addEventListener('DOMContentLoaded', function() {
         const fullTitle = "~$ Jxks.dev";
         let isForward = true;
         let currentLength = 0;
         const minLength = 1;
         const maxLength = fullTitle.length;
-        const typingSpeed = 300; // ms between characters
-        const pauseAtEnds = 1500; // pause at full title and minimum
+        const typingSpeed = 300;
+        const pauseAtEnds = 1500;
         
         function updateTitle() {
-          // Update direction if we've reached an endpoint
           if (currentLength >= maxLength) {
             isForward = false;
             setTimeout(animateTitle, pauseAtEnds);
@@ -49,29 +44,23 @@
             return;
           }
           
-          // Schedule next update
           setTimeout(animateTitle, typingSpeed);
         }
         
         function animateTitle() {
-          // Change length based on direction
           if (isForward) {
             currentLength++;
           } else {
             currentLength--;
           }
           
-          // Ensure we stay within bounds
           currentLength = Math.max(minLength, Math.min(maxLength, currentLength));
           
-          // Update the title
           document.title = fullTitle.substring(0, currentLength);
           
-          // Schedule next update
           updateTitle();
         }
         
-        // Start the animation
         animateTitle();
       });
     </script>

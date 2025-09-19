@@ -57,7 +57,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       if (!analyserRef.current) {
         analyserRef.current = audioContext.createAnalyser();
         analyserRef.current.fftSize = 512;
-        analyserRef.current.smoothingTimeConstant = 0.95; // Much more smoothing for less sensitivity
+        analyserRef.current.smoothingTimeConstant = 0.95;
       }
 
       sourceRef.current = audioContext.createMediaElementSource(audioRef.current);
@@ -65,7 +65,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       analyserRef.current.connect(audioContext.destination);
 
       setAudioContextInitialized(true);
-      console.log("Audio context initialized successfully");
 
       if (isPlaying) {
         startVisualization();
@@ -91,7 +90,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       playPromise
         .then(() => {
           setIsPlaying(true);
-          console.log("Autoplay successful");
           startVisualization();
         })
         .catch(err => {
@@ -121,7 +119,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
     const handleCanPlay = () => {
       setError(null);
-      console.log("Audio can play now");
     };
 
     audio.addEventListener('timeupdate', updateTime);
@@ -176,7 +173,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const lowFreqSum = dataArray.slice(0, Math.floor(bufferLength * 0.1)).reduce((a, b) => a + b, 0);
     const lowFreqAvg = lowFreqSum / Math.floor(bufferLength * 0.1);
     
-    // Store recent values for beat detection
     beatDetectionRef.current.push(lowFreqAvg);
     if (beatDetectionRef.current.length > 20) {
       beatDetectionRef.current.shift();
@@ -205,7 +201,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas to full screen with proper sizing
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -217,13 +212,11 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     
-    // Add smoothing for volume-based pulses
     let volumeHistory: number[] = [];
     const maxHistoryLength = 10;
     
-    // Add fade-out tracking for smooth transitions
-    let glowFade = 1.0; // Current fade multiplier (1.0 = full intensity, 0.0 = invisible)
-    const fadeSpeed = 0.015; // How fast to fade in/out
+    let glowFade = 1.0;
+    const fadeSpeed = 0.015;
 
     const draw = () => {
       if (!ctx || !analyser) return;
@@ -231,45 +224,36 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       animationRef.current = requestAnimationFrame(draw);
       analyser.getByteFrequencyData(dataArray);
       
-      // Detect beat
       const hasBeat = detectBeat(dataArray);
       if (onBeatDetected) {
         onBeatDetected(hasBeat);
       }
       
-      // Calculate overall volume for pulses
       const totalVolume = dataArray.reduce((sum, value) => sum + value, 0);
       const averageVolume = totalVolume / dataArray.length;
       const normalizedVolume = averageVolume / 255;
       
-      // Smooth volume over time
       volumeHistory.push(normalizedVolume);
       if (volumeHistory.length > maxHistoryLength) {
         volumeHistory.shift();
       }
       const smoothedVolume = volumeHistory.reduce((sum, vol) => sum + vol, 0) / volumeHistory.length;
       
-      // Update fade based on volume
       if (smoothedVolume > 0.05) {
-        // Fade in when sound is detected
         glowFade = Math.min(1.0, glowFade + fadeSpeed);
       } else {
-        // Fade out when no sound
         glowFade = Math.max(0.0, glowFade - fadeSpeed);
       }
       
-      // Clear canvas completely to remove traces
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      // Draw one big volume-based glow with fade
-      if (glowFade > 0.01) { // Only draw if there's still some fade
+        if (glowFade > 0.01) {
         const baseIntensity = Math.pow(smoothedVolume, 0.3) * 1.2;
-        const pulseIntensity = baseIntensity * glowFade; // Apply fade multiplier
-        const pulseRadius = smoothedVolume * Math.max(canvas.width, canvas.height) * 1.5 * glowFade; // Size relative to opacity
+        const pulseIntensity = baseIntensity * glowFade;
+        const pulseRadius = smoothedVolume * Math.max(canvas.width, canvas.height) * 1.5 * glowFade;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        // Create one big radial gradient for glow effect
         const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
         gradient.addColorStop(0, `rgba(255, 255, 255, ${pulseIntensity * 0.8})`);
         gradient.addColorStop(0.1, `rgba(255, 255, 255, ${pulseIntensity * 0.6})`);
@@ -284,25 +268,22 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         ctx.fill();
       }
       
-      // Frequency bars spanning the full width (much less sensitive)
-      const barCount = 228; // More bars for better coverage
+      const barCount = 228;
       const barWidth = canvas.width / barCount;
-      const spacing = 6; // Minimal spacing between bars
+      const spacing = 6;
       const actualBarWidth = barWidth - spacing;
       
       for (let i = 0; i < barCount; i++) {
         const dataIndex = Math.floor((i / barCount) * bufferLength);
         
-        // Much less sensitive - use cube root and additional dampening
         const rawIntensity = dataArray[dataIndex] / 255;
-        const dampenedIntensity = Math.pow(rawIntensity, 0.4) * 0.3; // Much more dampening
+        const dampenedIntensity = Math.pow(rawIntensity, 0.4) * 0.3;
         
-        const barHeight = dampenedIntensity * canvas.height * 0.6; // Reduced max height
+        const barHeight = dampenedIntensity * canvas.height * 0.6;
         
-        // Only draw bars if they have meaningful height
         if (barHeight > 2) {
           const x = i * barWidth;
-          const intensity = Math.min(rawIntensity * 0.6, 0.5); // Much lower opacity cap
+          const intensity = Math.min(rawIntensity * 0.6, 0.5);
           ctx.fillStyle = `rgba(255, 255, 255, ${intensity})`;
           ctx.fillRect(x, canvas.height - barHeight, actualBarWidth, barHeight);
         }
@@ -350,7 +331,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         playPromise
           .then(() => {
             setIsPlaying(true);
-            console.log("Play successful");
           })
           .catch(err => {
             console.error("Play failed:", err);
@@ -389,7 +369,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         muted={isMuted}
       />
       
-      {/* Compact Controls - Bottom Right */}
       <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-black bg-opacity-20 border border-white/20 rounded-lg p-2 backdrop-blur-sm hover:border-white/40 transition-all duration-300">
         <button
           onClick={togglePlay}
@@ -420,7 +399,6 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         </div>
       </div>
       
-      {/* Track Info - Bottom Left */}
       <div className="fixed bottom-4 left-4 z-50 bg-black bg-opacity-20 border border-white/20 rounded-lg p-2 backdrop-blur-sm max-w-xs hover:border-white/40 transition-all duration-300">
         <div className="text-white text-xs font-mono truncate">
           {tracks[currentTrack].title}

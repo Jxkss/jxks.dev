@@ -46,9 +46,7 @@ function App() {
   
   useEffect(() => {
     if (interactionComplete && videoRef.current) {
-      // Play the video and unmute it after user interaction
       videoRef.current.play().then(() => {
-        // Unmute the video after successful play
         videoRef.current!.muted = false;
         setIsMuted(false);
       }).catch(err => {
@@ -86,7 +84,6 @@ function App() {
       setContentOverflow(stillOverflowing);
       setScale(newScale);
       
-      // Adjust padding based on device type
       if (isMobile) {
         wrapper.style.paddingTop = '1rem';
         wrapper.style.paddingBottom = '1rem';
@@ -95,7 +92,6 @@ function App() {
         wrapper.style.paddingBottom = stillOverflowing ? '1rem' : '2rem';
       }
       
-      // Ensure scroll position is at the top for mobile devices
       if (isMobile && interactionComplete) {
         setTimeout(() => {
           wrapper.scrollTop = 0;
@@ -141,7 +137,6 @@ function App() {
 
   return (
     <div className={`min-h-screen bg-black text-white relative font-mono text-bloom transition-all duration-200 ${hasBeat ? 'drop-shadow-[0_0_50px_rgba(255,255,255,0.3)]' : ''}`}>
-      {/* Background Visualizer Canvas - Behind everything except video */}
       <canvas 
         ref={visualizerCanvasRef} 
         className="fixed top-0 left-0 pointer-events-none"
@@ -239,7 +234,6 @@ function App() {
             </div>
           </div>
 
-          {/* Side-by-side layout */}
           <div className={`grid ${isMobile ? 'grid-cols-1 gap-6' : 'grid-cols-3 gap-6'}`}>
             <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full backdrop-blur-sm hover:border-white/40">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
@@ -265,7 +259,6 @@ function App() {
             </div>
           </div>
 
-          {/* Music Player is now positioned as fixed elements */}
           <MusicPlayer 
             autoplayEnabled={interactionComplete}
             externalMuted={isMuted}
@@ -293,7 +286,6 @@ function App() {
 
       <div className="glitch-overlay"></div>
       
-      {/* Beat Glow Overlay */}
       {hasBeat && (
         <div className="fixed inset-0 pointer-events-none z-40 animate-pulse">
           <div className="w-full h-full bg-gradient-radial from-white/10 via-transparent to-transparent"></div>
