@@ -33,8 +33,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const beatDetectionRef = useRef<number[]>([]);
 
   const tracks = [
-    { name: 'song.mp3', title: 'TOKYO HOTEL - Zoomy, abel31' },
-    { name: 'lsdb.mp3', title: 'LA SALLE DE BAIN' }
+    { name: 'fixyou.mp3', title: '#FIXYOUU - prkr blu, 1crusafix' },
+    { name: 'fixyou.mp3', title: '#FIXYOUU - prkr blu, 1crusafix' }
   ];
 
   const getAudioPath = () => `/${tracks[currentTrack].name}`;
