@@ -34,7 +34,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 
   const tracks = [
     { name: 'fixyou.mp3', title: '#FIXYOUU - prkr blu, 1crusafix' },
-    { name: 'fixyou.mp3', title: '#FIXYOUU - prkr blu, 1crusafix' }
+    { name: 'zombies.mp3', title: 'i hate zombys :pp - *67' }
   ];
 
   const getAudioPath = () => `/${tracks[currentTrack].name}`;
