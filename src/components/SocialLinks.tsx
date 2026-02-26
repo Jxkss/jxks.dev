@@ -133,7 +133,7 @@ const SocialLinks: React.FC<SocialLinksProps> = ({ vertical = false }) => {
   if (vertical) {
     return (
       <div className="space-y-4">
-        <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-4 hover:border-white/40 transition-all duration-300 hover:shadow-md hover:shadow-white/20">
+        <div className="bg-black/10 border border-white/20 rounded-xl p-4 hover:border-white/35 transition-all duration-300">
           <h4 className="text-white text-sm font-bold mb-3 flex items-center gap-2">
             <span className="animate-pulse">~$</span> SOCIAL
           </h4>
@@ -161,7 +161,7 @@ const SocialLinks: React.FC<SocialLinksProps> = ({ vertical = false }) => {
           </div>
         </div>
         
-        <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-4 hover:border-white/40 transition-all duration-300 hover:shadow-md hover:shadow-white/20">
+        <div className="bg-black/10 border border-white/20 rounded-xl p-4 hover:border-white/35 transition-all duration-300">
           <h4 className="text-white text-sm font-bold mb-3 flex items-center gap-2">
             <span className="animate-pulse">~$</span> CRYPTO.DONATE
           </h4>
@@ -203,7 +203,7 @@ const SocialLinks: React.FC<SocialLinksProps> = ({ vertical = false }) => {
 
   return (
     <div className="space-y-4">
-        <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-4 hover:border-white/40 transition-all duration-300 hover:shadow-md hover:shadow-white/20 group">
+        <div className="bg-black/10 border border-white/20 rounded-xl p-4 hover:border-white/35 transition-all duration-300 group">
         <h4 className="text-white font-bold text-sm mb-3">SOCIAL LINKS</h4>
         
         <div className="grid grid-cols-4 gap-2">
@@ -222,7 +222,7 @@ const SocialLinks: React.FC<SocialLinksProps> = ({ vertical = false }) => {
         </div>
       </div>
       
-        <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-4 hover:border-white/40 transition-all duration-300 hover:shadow-md hover:shadow-white/20 group">
+        <div className="bg-black/10 border border-white/20 rounded-xl p-4 hover:border-white/35 transition-all duration-300 group">
         <h4 className="text-white font-bold text-sm mb-3">CRYPTO DONATIONS</h4>
         
         <div className="grid grid-cols-3 gap-2">

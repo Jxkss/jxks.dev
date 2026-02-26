@@ -16,7 +16,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
-  const [volume] = useState(0.5);
+  const [volume] = useState(0.2);
   const [isMuted, setIsMuted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -33,8 +33,8 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
   const beatDetectionRef = useRef<number[]>([]);
 
   const tracks = [
-    { name: 'fixyou.mp3', title: '#FIXYOUU - prkr blu, 1crusafix' },
-    { name: 'zombies.mp3', title: 'i hate zombys :pp - *67' }
+    { name: 'change.mp3', title: 'change - cewer, lieu' },
+    { name: 'lovehate.mp3', title: 'LOVE > HATE - ELIESG, midwxst' }
   ];
 
   const getAudioPath = () => `/${tracks[currentTrack].name}`;
@@ -216,12 +216,20 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     const maxHistoryLength = 10;
     
     let glowFade = 1.0;
-    const fadeSpeed = 0.015;
+    const fadeSpeedUp = 0.02;
+    const fadeSpeedDown = 0.004;
+    
+    let glowVolume = 0;
+    let frameCount = 0;
+    const warmupFrames = 55;
+    const introFrames = 42;
 
     const draw = () => {
       if (!ctx || !analyser) return;
 
       animationRef.current = requestAnimationFrame(draw);
+      frameCount++;
+      
       analyser.getByteFrequencyData(dataArray);
       
       const hasBeat = detectBeat(dataArray);
@@ -239,51 +247,89 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
       }
       const smoothedVolume = volumeHistory.reduce((sum, vol) => sum + vol, 0) / volumeHistory.length;
       
+      const blendUp = 0.2;
+      const blendDown = 0.06;
+      glowVolume = smoothedVolume > glowVolume
+        ? glowVolume + (smoothedVolume - glowVolume) * blendUp
+        : glowVolume + (smoothedVolume - glowVolume) * blendDown;
+      
       if (smoothedVolume > 0.05) {
-        glowFade = Math.min(1.0, glowFade + fadeSpeed);
+        glowFade = Math.min(1.0, glowFade + fadeSpeedUp);
       } else {
-        glowFade = Math.max(0.0, glowFade - fadeSpeed);
+        glowFade = Math.max(0.0, glowFade - fadeSpeedDown);
       }
       
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-        if (glowFade > 0.01) {
-        const baseIntensity = Math.pow(smoothedVolume, 0.3) * 1.2;
-        const pulseIntensity = baseIntensity * glowFade;
-        const pulseRadius = smoothedVolume * Math.max(canvas.width, canvas.height) * 1.5 * glowFade;
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${pulseIntensity * 0.8})`);
-        gradient.addColorStop(0.1, `rgba(255, 255, 255, ${pulseIntensity * 0.6})`);
-        gradient.addColorStop(0.3, `rgba(255, 255, 255, ${pulseIntensity * 0.4})`);
-        gradient.addColorStop(0.6, `rgba(255, 255, 255, ${pulseIntensity * 0.2})`);
-        gradient.addColorStop(0.8, `rgba(255, 255, 255, ${pulseIntensity * 0.1})`);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const maxDimension = Math.max(canvas.width, canvas.height);
+      
+      if (frameCount < introFrames) {
+        const t = frameCount / introFrames;
+        const easeOut = 1 - Math.pow(1 - t, 2.2);
+        const introRadius = maxDimension * (0.92 - 0.72 * easeOut);
+        const introOpacity = 0.05 + 0.38 * easeOut;
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, introRadius);
+        gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+        gradient.addColorStop(0.2, `rgba(255, 255, 255, ${introOpacity * 0.35})`);
+        gradient.addColorStop(0.45, `rgba(255, 255, 255, ${introOpacity * 0.5})`);
+        gradient.addColorStop(0.7, `rgba(255, 255, 255, ${introOpacity * 0.25})`);
+        gradient.addColorStop(0.9, `rgba(255, 255, 255, ${introOpacity * 0.08})`);
         gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
-        
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, introRadius, 0, Math.PI * 2);
         ctx.fill();
+      }
+      
+      if (glowFade > 0.01) {
+        const warmupFactor = Math.min(1, frameCount / warmupFrames);
+        const baseIntensity = Math.min(Math.pow(glowVolume, 0.28) * 2.0, 0.75);
+        const pulseIntensity = baseIntensity * glowFade * warmupFactor;
+        const pulseRadius = glowVolume * Math.max(canvas.width, canvas.height) * 2.2 * glowFade;
+        const sizeThreshold = maxDimension * 0.18;
+        const rampLength = maxDimension * 0.35;
+        const sizeVisibility = pulseRadius <= sizeThreshold
+          ? 0
+          : Math.min(1, (pulseRadius - sizeThreshold) / rampLength);
+        
+        if (sizeVisibility > 0.001) {
+          const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, pulseRadius);
+          gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+          gradient.addColorStop(0.15, `rgba(255, 255, 255, ${Math.min(pulseIntensity * 0.2, 0.18) * sizeVisibility})`);
+          gradient.addColorStop(0.35, `rgba(255, 255, 255, ${Math.min(pulseIntensity * 0.5, 0.45) * sizeVisibility})`);
+          gradient.addColorStop(0.55, `rgba(255, 255, 255, ${Math.min(pulseIntensity * 0.35, 0.32) * sizeVisibility})`);
+          gradient.addColorStop(0.75, `rgba(255, 255, 255, ${Math.min(pulseIntensity * 0.18, 0.16) * sizeVisibility})`);
+          gradient.addColorStop(0.9, `rgba(255, 255, 255, ${Math.min(pulseIntensity * 0.06, 0.06) * sizeVisibility})`);
+          gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, pulseRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
       
       const barCount = 228;
       const barWidth = canvas.width / barCount;
-      const spacing = 6;
+      const spacing = 5;
       const actualBarWidth = barWidth - spacing;
       
       for (let i = 0; i < barCount; i++) {
         const dataIndex = Math.floor((i / barCount) * bufferLength);
         
         const rawIntensity = dataArray[dataIndex] / 255;
-        const dampenedIntensity = Math.pow(rawIntensity, 0.4) * 0.3;
+        const dampenedIntensity = Math.pow(rawIntensity, 0.35) * 0.65;
         
-        const barHeight = dampenedIntensity * canvas.height * 0.6;
+        const barHeight = dampenedIntensity * canvas.height * 0.38;
         
-        if (barHeight > 2) {
+        if (barHeight > 1) {
           const x = i * barWidth;
-          const intensity = Math.min(rawIntensity * 0.6, 0.5);
+          const baseIntensity = Math.min(rawIntensity * 0.85 + 0.15, 0.85);
+          const t = i / barCount;
+          const fade = 1 - Math.pow(t, 0.6);
+          const intensity = baseIntensity * fade;
           ctx.fillStyle = `rgba(255, 255, 255, ${intensity})`;
           ctx.fillRect(x, canvas.height - barHeight, actualBarWidth, barHeight);
         }
@@ -369,7 +415,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         muted={isMuted}
       />
       
-      <div className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-black bg-opacity-20 border border-white/20 rounded-lg p-2 backdrop-blur-sm hover:border-white/40 transition-all duration-300">
+      <div className="animate-float animate-float-delay-3 fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-black/10 border border-white/20 rounded-xl p-2 backdrop-blur-md hover:border-white/35 transition-all duration-200">
         <button
           onClick={togglePlay}
           className="text-white hover:text-gray-300 transition-all duration-200 hover:scale-110 p-1"
@@ -399,7 +445,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
         </div>
       </div>
       
-      <div className="fixed bottom-4 left-4 z-50 bg-black bg-opacity-20 border border-white/20 rounded-lg p-2 backdrop-blur-sm max-w-xs hover:border-white/40 transition-all duration-300">
+      <div className="animate-float animate-float-delay-1 fixed bottom-4 left-4 z-50 bg-black/10 border border-white/20 rounded-xl p-2 backdrop-blur-md max-w-xs hover:border-white/35 transition-all duration-200">
         <div className="text-white text-xs font-mono truncate">
           {tracks[currentTrack].title}
         </div>

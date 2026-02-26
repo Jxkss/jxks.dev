@@ -22,6 +22,34 @@ function App() {
   const { count: viewCount, loading: viewCountLoading } = useViewCounter();
   
   useEffect(() => {
+    const scale = 1.5;
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const w = Math.max(1, Math.round(img.width * scale));
+      const h = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0, w, h);
+      try {
+        const dataUrl = canvas.toDataURL('image/png');
+        const hotX = Math.round(w / 2);
+        const hotY = Math.round(h / 2);
+        document.documentElement.style.setProperty('--cursor-scaled', `url(${dataUrl}) ${hotX} ${hotY}, auto`);
+      } catch {
+        document.documentElement.style.setProperty('--cursor-scaled', 'url(/cursor.png), auto');
+      }
+    };
+    img.onerror = () => {
+      document.documentElement.style.setProperty('--cursor-scaled', 'url(/cursor.png), auto');
+    };
+    img.src = '/cursor.png';
+  }, []);
+  
+  useEffect(() => {
     const checkScreenSize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
@@ -136,7 +164,7 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-black text-white relative font-mono text-bloom transition-all duration-200 ${hasBeat ? 'drop-shadow-[0_0_50px_rgba(255,255,255,0.3)]' : ''}`}>
+    <div className="min-h-screen bg-black text-white relative font-mono text-bloom transition-all duration-200">
       <canvas 
         ref={visualizerCanvasRef} 
         className="fixed top-0 left-0 pointer-events-none"
@@ -160,7 +188,7 @@ function App() {
       <video
         ref={videoRef}
         className="fixed top-0 left-0 w-full h-full object-cover"
-        style={{ opacity: 0.5, zIndex: 2 }}
+        style={{ opacity: 0.8, zIndex: 2 }}
         muted={isMuted}
         loop
         playsInline
@@ -196,38 +224,38 @@ function App() {
           <div className="w-full py-2 mb-6">
             <div className="text-center relative">
               {!isMobile ? (
-                <div className="relative">
+                <div className="relative animate-float">
                   {interactionComplete && <TextParticles containerClassName="z-0" />}
                   
-                  <pre className="text-white text-xs md:text-sm leading-tight whitespace-pre font-mono drop-shadow-lg overflow-x-auto enhanced-text-glow relative z-10">
+                  <pre className="text-white text-xs md:text-sm leading-tight whitespace-pre font-mono overflow-x-auto enhanced-text-glow relative z-10">
                     {asciiArt}
                   </pre>
                 </div>
               ) : (
-                <div className="relative">
+                <div className="relative animate-float">
                   {interactionComplete && <TextParticles containerClassName="z-0" />}
                   
                   <h1 className="text-3xl font-bold enhanced-text-glow relative z-10">JXKS.DEV</h1>
                 </div>
               )}
-              <div className="mt-2 text-white text-sm font-bold tracking-wider pulsing-glow">
+              <div className="mt-2 text-white text-sm font-bold tracking-wider animate-float-subtitle">
                 [ FULL-STACK DEVELOPER & LAZINESS SPECIALIST ]
               </div>
               
-              <div className="mt-2 flex items-center justify-center gap-2">
-                <div className="bg-black bg-opacity-20 border border-white/20 px-3 py-1 rounded-lg flex items-center hover:border-white/40 transition-all duration-300">
+              <div className="mt-2 flex items-center justify-center gap-2 animate-float animate-float-delay-2">
+                <div className="bg-black/15 border border-white/20 px-3 py-1.5 rounded-lg flex items-center hover:border-white/35 transition-all duration-200">
                   <span className="text-white mr-2 animate-pulse">👁</span>
                   <span className="text-white font-bold">
                     {viewCountLoading ? (
                       <span className="animate-pulse">LOADING...</span>
                     ) : (
-                      <span className="enhanced-text-glow">{viewCount.toLocaleString()}</span>
+                      <span>{viewCount.toLocaleString()}</span>
                     )}
                   </span>
                   <span className="ml-1 text-gray-400 text-xs">VIEWS</span>
                 </div>
                 <div className="border-l border-white/20 h-4"></div>
-                <div className="bg-black bg-opacity-20 border border-white/20 px-3 py-1 rounded-lg hover:border-white/40 transition-all duration-300">
+                <div className="bg-black/15 border border-white/20 px-3 py-1.5 rounded-lg hover:border-white/35 transition-all duration-200">
                   <span className="text-white">⚐ FRANCE/INDONESIA</span>
                 </div>
               </div>
@@ -235,21 +263,21 @@ function App() {
           </div>
 
           <div className={`grid ${isMobile ? 'grid-cols-1 gap-6' : 'grid-cols-3 gap-6'}`}>
-            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full backdrop-blur-sm hover:border-white/40">
+            <div className="animate-float bg-black/10 border border-white/20 rounded-xl p-6 transition-all duration-300 h-full backdrop-blur-md hover:border-white/35 shadow-xl shadow-black/20 card-glass">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> SKILLS
               </h3>
               <SkillsMatrix />
             </div>
             
-            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full backdrop-blur-sm hover:border-white/40">
+            <div className="animate-float animate-float-delay-1 bg-black/10 border border-white/20 rounded-xl p-6 transition-all duration-300 h-full backdrop-blur-md hover:border-white/35 shadow-xl shadow-black/20 card-glass">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> PROJECTS
               </h3>
               <ProjectList />
             </div>
             
-            <div className="bg-black bg-opacity-20 border border-white/20 rounded-lg p-6 transition-all duration-300 hover:shadow-white/20 h-full flex flex-col backdrop-blur-sm hover:border-white/40">
+            <div className="animate-float animate-float-delay-2 bg-black/10 border border-white/20 rounded-xl p-6 transition-all duration-300 h-full flex flex-col backdrop-blur-md hover:border-white/35 shadow-xl shadow-black/20 card-glass">
               <h3 className="text-white text-sm font-bold mb-4 flex items-center gap-2">
                 <span className="animate-pulse">~$</span> CONNECT
               </h3>
@@ -271,13 +299,13 @@ function App() {
 
       {!interactionComplete && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center cursor-pointer"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center cursor-pointer"
           onClick={handleInteraction}
         >
-          <div className="text-center px-4 transform scale-110">
-            <h1 className="text-4xl font-bold text-white mb-4 tracking-wider enhanced-text-glow">JXKS.DEV</h1>
-            <div className="border border-white p-4 rounded-lg">
-              <p className="text-white text-lg pulsing-glow">[ CLICK ANYWHERE TO INITIALIZE ]</p>
+          <div className="text-center px-4">
+            <h1 className="text-4xl font-bold text-white mb-4 tracking-wider">JXKS.DEV</h1>
+            <div className="animate-float border border-white/40 p-5 rounded-xl bg-black/15">
+              <p className="text-white text-lg">[ CLICK ANYWHERE TO INITIALIZE ]</p>
             </div>
             <p className="text-gray-400 mt-4 text-sm">The Website will open after interaction.</p>
           </div>

@@ -3,6 +3,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --cursor-scaled: url('/cursor.png'), auto;
+}
+
+html,
+body,
+*,
+*::before,
+*::after {
+  cursor: var(--cursor-scaled) !important;
+}
+
 body {
   font-family: 'JetBrains Mono', monospace;
   background: #000000;
@@ -39,7 +51,6 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 50%;
   background: #FFFFFF;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -49,7 +60,6 @@ input[type="range"]::-moz-range-thumb {
   background: #FFFFFF;
   cursor: pointer;
   border: none;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 @keyframes matrix-rain {
@@ -93,13 +103,43 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.animate-float-delay-1 {
+  animation-delay: -1.4s;
+}
+
+.animate-float-delay-2 {
+  animation-delay: -2.8s;
+}
+
+.animate-float-delay-3 {
+  animation-delay: -4.2s;
+}
+
+.animate-float-subtitle {
+  animation: float 5s ease-in-out -1.4s infinite, subtle-pulse 4s ease-in-out infinite;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
 .cursor-blink {
   animation: cursor-blink 1s infinite;
 }
 
-.btn-glow:hover {
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+.cursor-blink {
+  animation: cursor-blink 1s infinite;
 }
 
 .grid-item {
@@ -107,18 +147,16 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .grid-item:hover {
-  transform: scale(1.05) translateY(-2px);
-  border-color: #FFFFFF;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: scale(1.02) translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 * {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
 }
 
 @keyframes status-pulse {
